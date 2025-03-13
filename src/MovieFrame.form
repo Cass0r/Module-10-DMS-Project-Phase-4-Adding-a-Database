@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="MovieFrame">
+  <grid id="27dc6" binding="MainPanel" layout-manager="GridLayoutManager" row-count="4" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+    <margin top="0" left="0" bottom="0" right="0"/>
+    <constraints>
+      <xy x="4" y="24" width="1049" height="668"/>
+    </constraints>
+    <properties>
+      <background color="-2335"/>
+      <enabled value="false"/>
+      <inheritsPopupMenu value="false"/>
+      <opaque value="true"/>
+    </properties>
+    <border type="none"/>
+    <children>
+      <component id="9e634" class="javax.swing.JButton" binding="displayMovieCollectionButton" default-binding="true">
+        <constraints>
+          <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <background color="-10496"/>
+          <font name="Broadway" size="16" style="0"/>
+          <foreground color="-11850194"/>
+          <hideActionText value="false"/>
+          <icon value="icons/recorder.png"/>
+          <text value="Display Movie Collection"/>
+        </properties>
+      </component>
+      <component id="19d1a" class="javax.swing.JButton" binding="calculateAverageMovieRatingButton" default-binding="true">
+        <constraints>
+          <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <background color="-10496"/>
+          <enabled value="true"/>
+          <font name="Broadway" size="16" style="0"/>
+          <foreground color="-11850194"/>
+          <icon value="icons/filmroll.png"/>
+          <text value="Calculate Average Movie Rating"/>
+        </properties>
+      </component>
+      <component id="89961" class="javax.swing.JButton" binding="removeMovieButton" default-binding="true">
+        <constraints>
+          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <background color="-10496"/>
+          <font name="Broadway" size="16" style="0"/>
+          <foreground color="-11850194"/>
+          <icon value="icons/minus.png"/>
+          <text value="Remove Movie"/>
+        </properties>
+      </component>
+      <component id="3df32" class="javax.swing.JButton" binding="exitMenuButton" default-binding="true">
+        <constraints>
+          <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <background color="-10496"/>
+          <font name="Broadway" size="16" style="0"/>
+          <foreground color="-11850194"/>
+          <icon value="icons/exit.png"/>
+          <text value="Exit Menu"/>
+        </properties>
+      </component>
+      <component id="b8ee4" class="javax.swing.JButton" binding="updateMovieButton" default-binding="true">
+        <constraints>
+          <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <background color="-10496"/>
+          <font name="Broadway" size="16" style="0"/>
+          <foreground color="-11850194"/>
+          <icon value="icons/ClipBoard.png"/>
+          <text value="Update Movie"/>
+        </properties>
+      </component>
+      <component id="65928" class="javax.swing.JButton" binding="addMovieButton" default-binding="true">
+        <constraints>
+          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <background color="-10496"/>
+          <enabled value="true"/>
+          <font name="Broadway" size="16" style="0"/>
+          <foreground color="-11850194"/>
+          <hideActionText value="false"/>
+          <icon value="icons/plus.png"/>
+          <iconTextGap value="3"/>
+          <inheritsPopupMenu value="false"/>
+          <text value="Add Movie"/>
+        </properties>
+      </component>
+      <component id="e68ac" class="javax.swing.JLabel" binding="MenuTitle">
+        <constraints>
+          <grid row="0" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <doubleBuffered value="false"/>
+          <font name="Broadway" size="21" style="3"/>
+          <foreground color="-7658974"/>
+          <horizontalAlignment value="0"/>
+          <horizontalTextPosition value="0"/>
+          <icon value="icons/Webp.net-resizeimage.png"/>
+          <opaque value="false"/>
+          <text value="Movie Collection Menu"/>
+          <verticalAlignment value="0"/>
+          <verticalTextPosition value="0"/>
+        </properties>
+      </component>
+    </children>
+  </grid>
+</form>

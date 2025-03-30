@@ -61,7 +61,6 @@ public class MovieFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 displayMovies();
-
             }
         });
 
@@ -96,7 +95,7 @@ public class MovieFrame extends JFrame {
     //----------------------------------------------------------------------------------------------------------------------
 //adding movies choice
     private void addMovie() {
-        String[] options = {"Manually", "Text File"};
+        String[] options = {"Manually", "Database"};
         int choice = JOptionPane.showOptionDialog(
                 this,
                 "How would you like to add the movie?",
@@ -111,7 +110,7 @@ public class MovieFrame extends JFrame {
         if (choice == 0) {
             addMovieManually(); // Calls manual input method
         } else if (choice == 1) {
-            addMoviesFromFile(); // Calls file input method
+            addMoviesFromDB(); // Calls file input method
         }
     }
     //----------------------------------------------------------------------------------------------------------------------
@@ -214,113 +213,127 @@ public class MovieFrame extends JFrame {
     }
     //----------------------------------------------------------------------------------------------------------------------
 //Movies will be added through file (This class will share similar constraints as the last method
-    private void addMoviesFromFile() {
-        JFileChooser fileChooser = new JFileChooser();
-        int returnValue = fileChooser.showOpenDialog(this);
+    private void addMoviesFromDB() {
+        //  Ask for the database connection first
+        if (!DatabaseHandler.getInstance().connect()) {
+            UITheme.applyErrorTheme(this, "Failed to connect to the database. Operation cancelled.", "Connection Error");
+            return;  // Stop execution if the connection fails
+        }
 
-        if (returnValue == JFileChooser.APPROVE_OPTION) {
-            File selectedFile = fileChooser.getSelectedFile();
+        //  File chooser for selecting the movie text file
+          JFileChooser fileChooser = new JFileChooser();
+      //  int returnValue = fileChooser.showOpenDialog(this);
 
-            if (!selectedFile.exists() || !selectedFile.canRead()) {
-                UITheme.applyErrorTheme(this, "Error: Cannot read the selected file. Please check file permissions.","Error");
-                return;
-            }
+      /*  if (returnValue != JFileChooser.APPROVE_OPTION) {
+            return;  // Cancel if no file is selected
+        }*/
 
-            try (BufferedReader reader = new BufferedReader(new FileReader(selectedFile))) {
-                String line;
-                int successCount = 0, failCount = 0;
-                StringBuilder errorMessages = new StringBuilder();
-                String[] validGenres = {"Action", "Crime", "Drama", "Fantasy", "Horror", "Comedy", "Romance",
-                        "Science Fiction", "Sports", "Thriller", "Mystery", "War", "Western"};
+        File selectedFile = fileChooser.getSelectedFile();
 
-                while ((line = reader.readLine()) != null) {
-                    String[] parts = line.split(",");
+        if (!selectedFile.exists() || !selectedFile.canRead()) {
+            UITheme.applyErrorTheme(this, "Error: Cannot read the selected file. Please check file permissions.", "Error");
+            return;
+        }
 
-                    if (parts.length != 6) {
-                        failCount++;
-                        errorMessages.append("Skipping invalid line (incorrect number of fields): ").append(line).append("\n");
-                        continue;
-                    }
+        try (BufferedReader reader = new BufferedReader(new FileReader(selectedFile))) {
+            String line;
+            int successCount = 0, failCount = 0;
+            StringBuilder errorMessages = new StringBuilder();
+            String[] validGenres = {"Action", "Crime", "Drama", "Fantasy", "Horror", "Comedy", "Romance",
+                    "Science Fiction", "Sports", "Thriller", "Mystery", "War", "Western"};
 
-                    //Title
-                    String title = parts[0].trim();
-                    int year;
-                    try {
-                        year = Integer.parseInt(parts[1].trim());
-                        if (year < 1900 || year > 2025) throw new NumberFormatException();
-                    } catch (NumberFormatException e) {
-                        failCount++;
-                        errorMessages.append("Invalid year for movie: ").append(title).append(" (must be 1900-2025)\n");
-                        continue;
-                    }
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
 
-                    //genre
-                    String genre = parts[2].trim();
-                    boolean validGenre = false;
-                    for (String valid : validGenres) {
-                        if (genre.equalsIgnoreCase(valid)) {
-                            validGenre = true;
-                            break;
-                        }
-                    }
-                    if (!validGenre) {
-                        failCount++;
-                        errorMessages.append("Invalid genre for movie: ").append(title).append(" (must be one of " + String.join(", ", validGenres) + ")\n");
-                        continue;
-                    }
+                if (parts.length != 6) {
+                    failCount++;
+                    errorMessages.append("Skipping invalid line (incorrect number of fields): ").append(line).append("\n");
+                    continue;
+                }
 
-                    //Director
-                    String director = parts[3].trim();
-                    if (!director.matches("^[a-zA-Z ]+$") || director.length() < 2 || director.length() > 25) {
-                        failCount++;
-                        errorMessages.append("Invalid director name for movie: ").append(title).append(" (2-25 letters only)\n");
-                        continue;
-                    }
+                // Title
+                String title = parts[0].trim();
+                int year;
 
-                    //Rating
-                    float rating;
-                    try {
-                        rating = Float.parseFloat(parts[4].trim());
-                        if (rating < 0 || rating > 100) throw new NumberFormatException();
-                    } catch (NumberFormatException e) {
-                        failCount++;
-                        errorMessages.append("Invalid rating for movie: ").append(title).append(" (must be 0-100)\n");
-                        continue;
-                    }
+                try {
+                    year = Integer.parseInt(parts[1].trim());
+                    if (year < 1900 || year > 2025) throw new NumberFormatException();
+                } catch (NumberFormatException e) {
+                    failCount++;
+                    errorMessages.append("Invalid year for movie: ").append(title).append(" (must be 1900-2025)\n");
+                    continue;
+                }
 
-                    //Watched status
-                    boolean watched;
-                    if (parts[5].trim().equalsIgnoreCase("true") || parts[5].trim().equalsIgnoreCase("false")) {
-                        watched = Boolean.parseBoolean(parts[5].trim());
-                    } else {
-                        failCount++;
-                        errorMessages.append("Invalid watched status for movie: ").append(title).append(" (must be 'true' or 'false')\n");
-                        continue;
-                    }
-
-                    // Add the movie if all conditions pass
-                    Movie movie = new Movie(title, year, genre, director, rating, watched);
-                    if (movieCollection.addMovie(movie)) {
-                        successCount++;
-                    } else {
-                        failCount++;
-                        errorMessages.append("Duplicate movie: ").append(title).append(" (already exists in collection)\n");
+                // Genre validation
+                String genre = parts[2].trim();
+                boolean validGenre = false;
+                for (String valid : validGenres) {
+                    if (genre.equalsIgnoreCase(valid)) {
+                        validGenre = true;
+                        break;
                     }
                 }
 
-                // Show summary of whats was added
-                String message = "Movies successfully added: " + successCount + "\nFailed entries: " + failCount;
-                if (failCount > 0) {
-                    message += "\n\nErrors:\n" + errorMessages.toString();
+                if (!validGenre) {
+                    failCount++;
+                    errorMessages.append("Invalid genre for movie: ").append(title).append(" (must be one of " + String.join(", ", validGenres) + ")\n");
+                    continue;
                 }
-                JOptionPane.showMessageDialog(this, message);
 
-            } catch (IOException e) {
-                JOptionPane.showMessageDialog(this, "Error reading file: " + e.getMessage());
+                // Director validation
+                String director = parts[3].trim();
+                if (!director.matches("^[a-zA-Z ]+$") || director.length() < 2 || director.length() > 25) {
+                    failCount++;
+                    errorMessages.append("Invalid director name for movie: ").append(title).append(" (2-25 letters only)\n");
+                    continue;
+                }
+
+                // Rating validation
+                float rating;
+                try {
+                    rating = Float.parseFloat(parts[4].trim());
+                    if (rating < 0 || rating > 100) throw new NumberFormatException();
+                } catch (NumberFormatException e) {
+                    failCount++;
+                    errorMessages.append("Invalid rating for movie: ").append(title).append(" (must be 0-100)\n");
+                    continue;
+                }
+
+                // Watched status validation
+                boolean watched;
+                if (parts[5].trim().equalsIgnoreCase("true") || parts[5].trim().equalsIgnoreCase("false")) {
+                    watched = Boolean.parseBoolean(parts[5].trim());
+                } else {
+                    failCount++;
+                    errorMessages.append("Invalid watched status for movie: ").append(title).append(" (must be 'true' or 'false')\n");
+                    continue;
+                }
+
+                //  Add the movie to the database
+                Movie movie = new Movie(title, year, genre, director, rating, watched);
+
+                //  Use DatabaseHandler for database interaction
+                if (!DatabaseHandler.getInstance().movieExists(title)) {
+                   // DatabaseHandler.getInstance().addMovie(movie);
+                    successCount++;
+                } else {
+                    failCount++;
+                    errorMessages.append("Duplicate movie: ").append(title).append(" (already exists in database)\n");
+                }
             }
+
+            //  Display the summary of added movies
+            String message = "Movies successfully added: " + successCount + "\nFailed entries: " + failCount;
+            if (failCount > 0) {
+                message += "\n\nErrors:\n" + errorMessages.toString();
+            }
+            JOptionPane.showMessageDialog(this, message);
+
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Error reading file: " + e.getMessage());
         }
     }
-    //----------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 // Method to Remove Movie
     private void removeMovie() {
         String title = JOptionPane.showInputDialog(this, "Enter Movie Title to Remove:");
@@ -371,7 +384,7 @@ public class MovieFrame extends JFrame {
         }
 
         // Field selection with retry if canceled or invalid
-        String[] options = {"Title", "Release Year", "Genre", "Director", "Rating", "Watched Status"};
+        String[] options = {"Title", "Release_Year", "Genre", "Director", "Rating", "Watched_Status"};
         String field;
         do {
             field = (String) JOptionPane.showInputDialog(this, "Select Field to Update:", "Update Movie",
@@ -404,7 +417,7 @@ public class MovieFrame extends JFrame {
                     break;
 
                 //year
-                case "releaseyear":
+                case "release_year":
                     try {
                         int newYear = Integer.parseInt(newValue);
                         if (newYear < 1900 || newYear > 2025) {
@@ -459,7 +472,7 @@ public class MovieFrame extends JFrame {
                     break;
 
                 //Watched status
-                case "watchedstatus":
+                case "watched_status":
                     if (!newValue.equalsIgnoreCase("true") && !newValue.equalsIgnoreCase("false")) {
                         UITheme.applyErrorTheme(this, "Error: Watched status must be 'true' or 'false'.","Error");
                     } else {

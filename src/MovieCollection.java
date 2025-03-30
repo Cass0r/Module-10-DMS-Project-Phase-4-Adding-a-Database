@@ -24,28 +24,24 @@ public class MovieCollection {
     //made public for the unit testing
     //public Map<String,Movie> movies;
     public Map<String,Movie> movies;
-    private List<Movie> moviesdb;         // ✅ Change to List to use add()
+    private List<Movie> moviesdb;         //Change to List to use add()
 
     public MovieCollection(){
         movies = new HashMap<>();
         db_Handler = new DatabaseHandler();
-        // Inside MovieCollection constructor
+        // connect to database MovieCollection constructor
         if (db_Handler.connect()) {
-            db_Handler.displayAllMovies();   // Display movies after connecting
+            //db_Handler.displayAllMovies();   // Display movies after connecting
+
+            //used to help keep movies within map
+            refreshMovies();
         } else {
             JOptionPane.showMessageDialog(null, "Failed to connect to the database.");
         }
-
-
-
-
     }
 
     //initialize the class for Database
     DatabaseHandler db_Handler = new DatabaseHandler();
-//======================================================================================================================
-//Connecting to the database
-
 //======================================================================================================================
     //used for unit testing
     public Movie getMovie(String title) {
@@ -78,20 +74,10 @@ public class MovieCollection {
                 movie.getRating(),
                 movie.getWatched_Status()
         );
-
         // Add the movie to the in-memory list
         //movies.add(movie);
-
         System.out.println("Movie successfully added to the collection and database.");
-
-
-
-
-
         return true;
-
-
-
     }
 //======================================================================================================================
 //removeMovie(title: String) boolean
@@ -107,125 +93,9 @@ public class MovieCollection {
         */
         db_Handler.removeMovie(title);
         return true;
-
-
     }
 //======================================================================================================================
 //updateMovie(movie :Movie) boolean
-   /* public boolean updateMovie(String title, String field, String newValue) {
-        Movie movie = movies.get(title);
-        if (movie == null) {
-            System.out.println("Error: Movie not found.");
-            return false;
-        }
-//Depending on each attribute the rest of the attributes will have constraints to deal with error handing for wrong
-//input, much of the same constraints here will be used for the update method as well as the menu method
-        switch (field.toLowerCase()) {
-            case "title":
-                if (movies.containsKey(newValue)) {
-                    System.out.println("Error: A movie with this title already exists.");
-                    return false;
-                }
-                if (newValue.length() < 1 || newValue.length() > 45) {
-                    System.out.println("Error: Title must be between 1 and 45 characters.");
-                    return false;
-                }
-                movie.setTitle(newValue);
-                movies.put(newValue, movie);
-                // Remove old title reference
-                movies.remove(title);
-                break;
-//----------------------------------------------------------------------------------------------------------------------
-            case "releaseyear":
-                try {
-                    int newYear = Integer.parseInt(newValue);
-                    if (newYear < 1900 || newYear > 2025) {
-                        System.out.println("Error: The release year must be between 1900 and 2025.");
-                        return false;
-                    }
-                    movie.setRelease_Year(newYear);
-                } catch (NumberFormatException e) {
-                    System.out.println("Error: Invalid release year. Please enter a valid number.");
-                    return false;
-                }
-                break;
-//----------------------------------------------------------------------------------------------------------------------
-            case "genre":
-                String[] validGenres = {"Action", "Crime", "Drama", "Fantasy", "Horror", "Comedy", "Romance", "Science Fiction", "Sports", "Thriller", "Mystery", "War", "Western"};
-                boolean isValidGenre = false;
-                for (String genre : validGenres) {
-                    if (newValue.equalsIgnoreCase(genre)) {
-                        isValidGenre = true;
-                        break;
-                    }
-                }
-                if (!isValidGenre) {
-                    System.out.println("Error: Invalid genre.");
-                    return false;
-                }
-                movie.setGenre(newValue);
-                break;
-//----------------------------------------------------------------------------------------------------------------------
-            case "director":
-                // Loop until the director name is valid
-                while (true) {
-                    if (!newValue.matches("^[a-zA-Z ]+$") || newValue.length() < 2 || newValue.length() > 25) {
-                        System.out.println("Error: Director name must contain only letters and be 2-25 characters long.");
-                        // Allow retry by prompting for the new value again (this could come from user input instead of already provided newValue)
-                        // If you want to collect input from the user, this is where you'd add the prompt and input reading logic.
-                        return false; // or continue to prompt as necessary
-                    } else {
-                        movie.setDirector(newValue);
-                        break;  // Exit the loop when valid director name is entered
-                    }
-                }
-                break;
-//----------------------------------------------------------------------------------------------------------------------
-            //Only allow the integer to be inputted within the range
-            case "rating":
-                try {
-                    float newRating = Float.parseFloat(newValue);
-                    if (newRating < 0 || newRating > 100) {
-                        System.out.println("Error: The rating must be between 0 and 100.");
-                        return false;
-                    }
-                    movie.setRating(newRating);
-                } catch (NumberFormatException e) {
-                    System.out.println("Error: Invalid rating. Please enter a valid number.");
-                    return false;
-                }
-                break;
-//----------------------------------------------------------------------------------------------------------------------
-            //Important to focus on constraints after functionality
-            case "watchedstatus":
-                if (!newValue.equalsIgnoreCase("true") && !newValue.equalsIgnoreCase("false")) {
-                    System.out.println("Error: Watched status must be 'true' or 'false'.");
-                    return false;
-                }
-                movie.setWatched_Status(Boolean.parseBoolean(newValue));
-                break;
-            default:
-                System.out.println("Error: Invalid field.");
-                return false;
-        }
-
-
-        if (updated) {
-            db_Handler.updateMovieAttribute(title, field, newValue);
-            System.out.println("Movie updated successfully in both collection and database.");
-            return true;
-        } else {
-            System.out.println("No changes made.");
-            return false;
-        }
-     //   System.out.println("Movie updated successfully.");
-       // return true;
-    }*/
-
-
-
-
-
     //works
     public boolean updateMovie(String title, String field, String newValue) {
         Movie movie = movies.get(title);  // Get from in-memory collection
@@ -284,7 +154,7 @@ public class MovieCollection {
                 break;
 
             case "watched_status":
-                // ✅ Convert "true"/"false" to "1"/"0" for SQLite
+                //Convert "true"/"false" to "1"/"0" for SQLite
                 String booleanValue = newValue.equalsIgnoreCase("true") ? "1" : "0";
                 movie.setWatched_Status(Boolean.parseBoolean(newValue));
                 newValue = booleanValue;  // Use "1"/"0" when passing to the database
@@ -292,11 +162,11 @@ public class MovieCollection {
 
         }
 
-        // ✅ Update the database
+        //Update the database
         boolean updated = db_Handler.updateMovieAttribute(title, field, newValue);
 
         if (updated) {
-            refreshMovies();  // ✅ Refresh in-memory collection
+            refreshMovies();  //Refresh in-memory collection
             System.out.println("Movie updated successfully.");
         } else {
             System.out.println("Failed to update movie.");
@@ -304,19 +174,6 @@ public class MovieCollection {
 
         return updated;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
 //----------------------------------------------------------------------------------------------------------------------
 // 🔥 Refresh the in-memory movie list from the database
     public void refreshMovies() {
@@ -335,7 +192,7 @@ public class MovieCollection {
                         rs.getBoolean("watched_status")
                 );
 
-                movies.put(movie.getTitle(), movie);  // ✅ Add to the Map
+                movies.put(movie.getTitle(), movie);  //Add to the Map
             }
             System.out.println("In-memory collection refreshed.");
         } catch (SQLException e) {
@@ -356,9 +213,7 @@ public class MovieCollection {
                 System.out.println(movie);
             }
         }
-
         db_Handler.displayAllMovies();
-
     }
 //======================================================================================================================
     public float calculateAverageRating() {
@@ -379,8 +234,6 @@ public class MovieCollection {
         // Output the formatted average
         System.out.println("Average Movie Rating: " + formattedAverage);
         return Float.parseFloat(formattedAverage);
-
-
     }
 //======================================================================================================================
 //upload data through textfile
@@ -564,10 +417,6 @@ public class MovieCollection {
                                 System.out.println("Failed to connect to the database.");
                             }
 
-
-
-
-
                             break;
 //**********************************************************************************************************************
                         //--manually
@@ -721,11 +570,8 @@ public class MovieCollection {
                     // Check if the movie exists before proceeding
                     if (!movies.containsKey(updateTitle)) {
                         System.out.println("Error: Movie not found.");
-                        break;
-                    }
-
+                        break;  }
                     */
-
 
                     if (!db_Handler.movieExists(updateTitle)) {  // <-- Check in the database
                         System.out.println("Error: Movie not found in the database.");

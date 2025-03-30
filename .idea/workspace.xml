@@ -1,12 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="ArtifactsWorkspaceSettings">
+    <artifacts-to-build>
+      <artifact name="Module 10 - DMS Project Phase 4- Adding a Database:jar" />
+    </artifacts-to-build>
+  </component>
   <component name="AutoImportSettings">
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c89d64c6-185d-46e0-bdf3-4b9939905249" name="Changes" comment="SQLite jarfile and DBHelper code generated">
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
+    <list default="true" id="c89d64c6-185d-46e0-bdf3-4b9939905249" name="Changes" comment="Database handler class created and integrated into the Movie Collection Class">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DBHelper/DBHelper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/DBHelper/DBHelper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DBHelper/Movies.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/DBHelper/Movies.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseHandler.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/MovieCollection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/MovieCollection.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/MovieFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/MovieFrame.java" afterDir="false" />
     </list>
@@ -61,9 +68,9 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Modules",
+    "project.structure.last.edited": "Artifacts",
     "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0",
+    "project.structure.side.proportion": "0.2",
     "vue.rearranger.settings.migration": "true"
   },
   "keyToStringList": {
@@ -90,7 +97,7 @@
       <recent name="" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.MainApplication">
+  <component name="RunManager" selected="Application.MovieFrame">
     <configuration name="MainApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="MainApplication" />
       <module name="Module 10 - DMS Project Phase 4- Adding a Database" />
@@ -101,19 +108,6 @@
     <configuration name="MovieFrame" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="MovieFrame" />
       <module name="Module 10 - DMS Project Phase 4- Adding a Database" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="MovieFrame" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="MovieFrame" />
-      <module name="Module 10 - DMS Project Phase 4- Adding a Database" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value=".*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -145,6 +139,19 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="MovieFrame" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="MovieFrame" />
+      <module name="Module 10 - DMS Project Phase 4- Adding a Database" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value=".*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="MovieFrame.MovieFrame" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="MovieFrame.MovieFrame" />
       <module name="Module 10 - DMS Project Phase 4- Adding a Database" />
@@ -167,9 +174,9 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.MainApplication" />
+        <item itemvalue="Application.MovieFrame" />
         <item itemvalue="Application.db_test" />
-        <item itemvalue="Application.MovieFrame.MovieFrameDB" />
+        <item itemvalue="Application.MainApplication" />
         <item itemvalue="Application.MovieFrameDB" />
         <item itemvalue="Application.MovieFrameDB" />
       </list>
@@ -205,7 +212,8 @@
       <workItem from="1743214633953" duration="77000" />
       <workItem from="1743214713594" duration="176000" />
       <workItem from="1743214893272" duration="5125000" />
-      <workItem from="1743275470941" duration="36929000" />
+      <workItem from="1743275470941" duration="46690000" />
+      <workItem from="1743375363303" duration="1424000" />
     </task>
     <task id="LOCAL-00001" summary="Control Code">
       <option name="closed" value="true" />
@@ -231,7 +239,15 @@
       <option name="project" value="LOCAL" />
       <updated>1743214199418</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Database handler class created and integrated into the Movie Collection Class">
+      <option name="closed" value="true" />
+      <created>1743365281477</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1743365281477</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -240,31 +256,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Control Code" />
     <MESSAGE value="SQLite jarfile and DBHelper code generated" />
-    <option name="LAST_COMMIT_MESSAGE" value="SQLite jarfile and DBHelper code generated" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/MovieCollection.java</url>
-          <line>113</line>
-          <option name="timeStamp" value="40" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/MovieCollection.java</url>
-          <line>728</line>
-          <option name="timeStamp" value="42" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-method">
-          <url>file://$PROJECT_DIR$/src/MovieCollection.java</url>
-          <line>229</line>
-          <properties class="MovieCollection" method="updateMovie">
-            <option name="EMULATED" value="true" />
-            <option name="WATCH_EXIT" value="false" />
-          </properties>
-          <option name="timeStamp" value="41" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
+    <MESSAGE value="Database handler class created and integrated into the Movie Collection Class" />
+    <option name="LAST_COMMIT_MESSAGE" value="Database handler class created and integrated into the Movie Collection Class" />
   </component>
 </project>

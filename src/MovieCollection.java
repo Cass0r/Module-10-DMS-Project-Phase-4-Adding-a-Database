@@ -1,7 +1,11 @@
 //Required for the functions to operate such as Hashmap, scanner and Map.
+import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.*;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,16 +13,40 @@ import java.util.Scanner;
 import java.io.*;
 import java.text.DecimalFormat;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.sql.SQLException;
+
 public class MovieCollection {
 
     //private Map<String,Movie> movies;
     //made public for the unit testing
+    //public Map<String,Movie> movies;
     public Map<String,Movie> movies;
+    private List<Movie> moviesdb;         // ✅ Change to List to use add()
 
     public MovieCollection(){
         movies = new HashMap<>();
+        db_Handler = new DatabaseHandler();
+        // Inside MovieCollection constructor
+        if (db_Handler.connect()) {
+            db_Handler.displayAllMovies();   // Display movies after connecting
+        } else {
+            JOptionPane.showMessageDialog(null, "Failed to connect to the database.");
+        }
+
+
+
+
     }
 
+    //initialize the class for Database
+    DatabaseHandler db_Handler = new DatabaseHandler();
+//======================================================================================================================
+//Connecting to the database
+
+//======================================================================================================================
     //used for unit testing
     public Movie getMovie(String title) {
         return movies.get(title);
@@ -27,27 +55,64 @@ public class MovieCollection {
 //======================================================================================================================
 //addMovie(movie: Movie): boolean
     public  boolean addMovie(Movie movie){
+       /* if (movies.containsKey(movie.getTitle())) {
+            System.out.println("Error: Movie already exists in the collection.");
+            return false; // Movie already exists
+        }
+        movies.put(movie.getTitle(), movie);
+        db_Handler.addMovie();
+*/
+
         if (movies.containsKey(movie.getTitle())) {
             System.out.println("Error: Movie already exists in the collection.");
             return false; // Movie already exists
         }
         movies.put(movie.getTitle(), movie);
+
+        // Add movie to the SQLite database
+        db_Handler.addMovie(
+                movie.getTitle(),
+                movie.getRelease_Year(),
+                movie.getGenre(),
+                movie.getDirector(),
+                movie.getRating(),
+                movie.getWatched_Status()
+        );
+
+        // Add the movie to the in-memory list
+        //movies.add(movie);
+
+        System.out.println("Movie successfully added to the collection and database.");
+
+
+
+
+
         return true;
+
+
+
     }
 //======================================================================================================================
 //removeMovie(title: String) boolean
     //leave message for movie that was removed
     public boolean removeMovie(String title) {
+        /*
         if (movies.remove(title) == null) {
             System.out.println("Error: Movie not found.");
             return false;
         }
         System.out.println("Movie has been found and removed.");
         return true;
+        */
+        db_Handler.removeMovie(title);
+        return true;
+
+
     }
 //======================================================================================================================
 //updateMovie(movie :Movie) boolean
-    public boolean updateMovie(String title, String field, String newValue) {
+   /* public boolean updateMovie(String title, String field, String newValue) {
         Movie movie = movies.get(title);
         if (movie == null) {
             System.out.println("Error: Movie not found.");
@@ -143,10 +208,144 @@ public class MovieCollection {
                 System.out.println("Error: Invalid field.");
                 return false;
         }
-        System.out.println("Movie updated successfully.");
-        return true;
+
+
+        if (updated) {
+            db_Handler.updateMovieAttribute(title, field, newValue);
+            System.out.println("Movie updated successfully in both collection and database.");
+            return true;
+        } else {
+            System.out.println("No changes made.");
+            return false;
+        }
+     //   System.out.println("Movie updated successfully.");
+       // return true;
+    }*/
+
+
+
+
+
+    //works
+    public boolean updateMovie(String title, String field, String newValue) {
+        Movie movie = movies.get(title);  // Get from in-memory collection
+
+        if (movie == null) {
+            System.out.println("Error: Movie not found.");
+            return false;
+        }
+
+        // ✅ Update the in-memory movie object
+        switch (field.toLowerCase()) {
+            case "title":
+                if (movies.containsKey(newValue)) {
+                    System.out.println("Error: A movie with this title already exists.");
+                    return false;
+                }
+                movie.setTitle(newValue);
+                movies.remove(title);
+                movies.put(newValue, movie);
+                break;
+
+            case "release_year":
+                try {
+                    int newYear = Integer.parseInt(newValue);
+                    if (newYear < 1900 || newYear > 2025) {
+                        System.out.println("Error: Release year must be between 1900 and 2025.");
+                        return false;
+                    }
+                    movie.setRelease_Year(newYear);
+                } catch (NumberFormatException e) {
+                    System.out.println("Error: Invalid year format.");
+                    return false;
+                }
+                break;
+
+            case "genre":
+                movie.setGenre(newValue);
+                break;
+
+            case "director":
+                movie.setDirector(newValue);
+                break;
+
+            case "rating":
+                try {
+                    float newRating = Float.parseFloat(newValue);
+                    if (newRating < 0 || newRating > 100) {
+                        System.out.println("Error: Rating must be between 0 and 100.");
+                        return false;
+                    }
+                    movie.setRating(newRating);
+                } catch (NumberFormatException e) {
+                    System.out.println("Error: Invalid rating format.");
+                    return false;
+                }
+                break;
+
+            case "watched_status":
+                // ✅ Convert "true"/"false" to "1"/"0" for SQLite
+                String booleanValue = newValue.equalsIgnoreCase("true") ? "1" : "0";
+                movie.setWatched_Status(Boolean.parseBoolean(newValue));
+                newValue = booleanValue;  // Use "1"/"0" when passing to the database
+                break;
+
+        }
+
+        // ✅ Update the database
+        boolean updated = db_Handler.updateMovieAttribute(title, field, newValue);
+
+        if (updated) {
+            refreshMovies();  // ✅ Refresh in-memory collection
+            System.out.println("Movie updated successfully.");
+        } else {
+            System.out.println("Failed to update movie.");
+        }
+
+        return updated;
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+//----------------------------------------------------------------------------------------------------------------------
+// 🔥 Refresh the in-memory movie list from the database
+    public void refreshMovies() {
+        movies.clear();         // Clear the Map
+
+        String sql = "SELECT * FROM Movies;";
+        try (Statement stmt = db_Handler.getConnection().createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                Movie movie = new Movie(
+                        rs.getString("title"),
+                        rs.getInt("Release_Year"),
+                        rs.getString("genre"),
+                        rs.getString("director"),
+                        rs.getFloat("rating"),
+                        rs.getBoolean("watched_status")
+                );
+
+                movies.put(movie.getTitle(), movie);  // ✅ Add to the Map
+            }
+            System.out.println("In-memory collection refreshed.");
+        } catch (SQLException e) {
+            System.out.println("Failed to refresh in-memory collection: " + e.getMessage());
+        }
+    }
+
+    public void close() {
+        db_Handler.close();
+    }
 //======================================================================================================================
 //getMovie():List<Movie>
     public void Display_MovieCollection(){
@@ -157,6 +356,9 @@ public class MovieCollection {
                 System.out.println(movie);
             }
         }
+
+        db_Handler.displayAllMovies();
+
     }
 //======================================================================================================================
     public float calculateAverageRating() {
@@ -177,6 +379,8 @@ public class MovieCollection {
         // Output the formatted average
         System.out.println("Average Movie Rating: " + formattedAverage);
         return Float.parseFloat(formattedAverage);
+
+
     }
 //======================================================================================================================
 //upload data through textfile
@@ -313,7 +517,8 @@ public class MovieCollection {
                     //add the switch option for add movie manually or by text file
                     //Asking for manual  or text file option(letters failed, numbers failed, special failed)
                     System.out.println("How would you like to add the Movie");
-                    System.out.println("1. Textfile");
+                    //System.out.println("1. Textfile");
+                    System.out.println("1. Database");
                     System.out.println("2. Manually");
                     System.out.print("Enter Option Here:");
                     int option2 ;//= sc.nextInt();
@@ -338,6 +543,7 @@ public class MovieCollection {
 //**********************************************************************************************************************
                         //--textfile option
                         case 1:
+                            /*
                             //•	Never hardcode the file path the user must enter for the text file.  Always let the user enter the complete path.
                             System.out.print("Enter the full file path for the movies text file: ");
                             sc.nextLine();
@@ -350,6 +556,18 @@ public class MovieCollection {
                                 filePath = sc.nextLine();
                             }
                             addMoviesFromFile(filePath);
+                            */
+
+                            if (db_Handler.connect()) {
+                                System.out.println("Connected to the database successfully.");
+                            } else {
+                                System.out.println("Failed to connect to the database.");
+                            }
+
+
+
+
+
                             break;
 //**********************************************************************************************************************
                         //--manually
@@ -483,7 +701,13 @@ public class MovieCollection {
                     System.out.print("Enter title to remove: ");
                     sc.nextLine();
                     String remove_title = sc.nextLine();
-                    removeMovie(remove_title);
+                    //removeMovie(remove_title);
+                    //To integrate the database its best to add these instances at the end
+                    //error handling
+                    db_Handler.removeMovie(remove_title);
+
+
+
                     break;
 //----------------------------------------------------------------------------------------------------------------------
                 //Update Movie Collection
@@ -493,9 +717,18 @@ public class MovieCollection {
                     System.out.print("Enter title of the movie to update: ");
                     String updateTitle = sc.nextLine().trim();
 
+                    /*
                     // Check if the movie exists before proceeding
                     if (!movies.containsKey(updateTitle)) {
                         System.out.println("Error: Movie not found.");
+                        break;
+                    }
+
+                    */
+
+
+                    if (!db_Handler.movieExists(updateTitle)) {  // <-- Check in the database
+                        System.out.println("Error: Movie not found in the database.");
                         break;
                     }
 
@@ -525,7 +758,7 @@ public class MovieCollection {
                             }
                             break;
 //**********************************************************************************************************************
-                        case "releaseyear":
+                        case "release_year":
                             // Allow movies from 1900 to 2025
                             while (true) {
                                 System.out.print("Enter new release year (1900-2025): ");
@@ -606,7 +839,7 @@ public class MovieCollection {
                             }
                             break;
 //**********************************************************************************************************************
-                        case "watchedstatus":
+                        case "watched_status":
                             // Watched status should be 'true' or 'false'
                             while (true) {
                                 System.out.print("Watched? (true/false): ");
@@ -642,12 +875,15 @@ public class MovieCollection {
 //----------------------------------------------------------------------------------------------------------------------
                 //Display All Movies in Collection
                 case 4:
-                    Display_MovieCollection();
+                //add a error handling for empty table
+                    //Display_MovieCollection();
+                    db_Handler.displayAllMovies();
                     break;
 //----------------------------------------------------------------------------------------------------------------------
                 //Calculate Average Movie Rating
                 case 5:
-                    calculateAverageRating();
+                    db_Handler.calculateAverageRating();
+                    //calculateAverageRating();
                     break;
 //----------------------------------------------------------------------------------------------------------------------
                 //Exiting the menu
@@ -662,3 +898,6 @@ public class MovieCollection {
         } while (Option != 6);
     }//menu method
 }//class
+
+
+//C:\sqlite\MovieCollectionDatabase.db

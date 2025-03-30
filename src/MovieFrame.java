@@ -6,10 +6,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-
+import java.sql.*;
 
 public class MovieFrame extends JFrame {
-//All parts of the java form on the GUI
+    //All parts of the java form on the GUI
     private JTextField tfUserMenuSelect;
     private JButton btnExit;
     private JPanel MainPanel;
@@ -21,9 +21,9 @@ public class MovieFrame extends JFrame {
     private JButton exitMenuButton;
     private JButton updateMovieButton;
 
-//Calls back to the MovieCollection class as reference
+    //Calls back to the MovieCollection class as reference
     private MovieCollection movieCollection;
-//----------------------------------------------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------------------------------
 //Constructor
     public MovieFrame() {
         //The settings for the GUI when the program runs
@@ -93,7 +93,7 @@ public class MovieFrame extends JFrame {
             }
         });
     }
-//----------------------------------------------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------------------------------
 //adding movies choice
     private void addMovie() {
         String[] options = {"Manually", "Text File"};
@@ -114,7 +114,7 @@ public class MovieFrame extends JFrame {
             addMoviesFromFile(); // Calls file input method
         }
     }
-//----------------------------------------------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------------------------------
 //Adding movies manually, alot of what's done in this method will be repeated throughout the other methods for error
 //handling as well as window setup
     private void addMovieManually() {
@@ -212,7 +212,7 @@ public class MovieFrame extends JFrame {
             UITheme.applyErrorTheme(this, "Movie already exists!","Error");
         }
     }
-//----------------------------------------------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------------------------------
 //Movies will be added through file (This class will share similar constraints as the last method
     private void addMoviesFromFile() {
         JFileChooser fileChooser = new JFileChooser();
@@ -320,7 +320,7 @@ public class MovieFrame extends JFrame {
             }
         }
     }
-//----------------------------------------------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------------------------------
 // Method to Remove Movie
     private void removeMovie() {
         String title = JOptionPane.showInputDialog(this, "Enter Movie Title to Remove:");
@@ -332,7 +332,7 @@ public class MovieFrame extends JFrame {
             UITheme.applyErrorTheme(this, "Movie not found!","Error");
         }
     }
-//----------------------------------------------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------------------------------
 //Display Method
     private void displayMovies() {
         if (movieCollection.movies.isEmpty()) {
@@ -359,7 +359,7 @@ public class MovieFrame extends JFrame {
         // Show the movie collection in a scrollable dialog
         JOptionPane.showMessageDialog(this, scrollPane, "Movie Collection", JOptionPane.INFORMATION_MESSAGE);
     }
-//----------------------------------------------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------------------------------
 // Method to Update Movie
     private void updateMovie() {
         String title = JOptionPane.showInputDialog(this, "Enter Movie Title to Update:");
@@ -482,15 +482,17 @@ public class MovieFrame extends JFrame {
             UITheme.applyErrorTheme(this, "Failed to update movie.","Error");
         }
     }
-//----------------------------------------------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------------------------------
     // Method to Calculate Average Rating
     private void calculateAverageRating() {
         float avg = movieCollection.calculateAverageRating();
         JOptionPane.showMessageDialog(this, "Average Movie Rating: " + avg);
     }
-//----------------------------------------------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------------------------------
     // Main Method to begin the program and Run GUI
     public static void main(String[] args) {
         new MovieFrame();
     }
+
+
 }

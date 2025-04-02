@@ -1,7 +1,10 @@
-//Required for the functions to operate such as Hashmap, scanner and Map.
+//Importing necessary libraries for the program to function, Required for the functions to operate such as Hashmap,
+//scanner, map and etc.
+/**
+ * Importing necessary Java and Swing libraries for the program.
+ */
 import javax.swing.*;
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,21 +16,45 @@ import java.util.Scanner;
 import java.io.*;
 import java.text.DecimalFormat;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.sql.SQLException;
 
+/**
+ * The MovieCollection class is responsible for managing a collection of Movie objects.
+ * It provides functionalities to add, remove, update, and display movies, as well as calculate
+ * average ratings and import movies from a file. It interacts with a database to persist movie data.
+ *
+ * Role in the system: This class acts as the central manager for movie data. It provides methods
+ * for manipulating the movie collection and syncing it with a database.
+ *
+ * Usage example:
+ * <pre>
+ * MovieCollection collection = new MovieCollection();
+ * collection.addMovie(new Movie("Inception", 2010, "Sci-Fi", "Christopher Nolan", 8.8f, false));
+ * </pre>
+ */
 public class MovieCollection {
 
     //private Map<String,Movie> movies;
     //made public for the unit testing
     //public Map<String,Movie> movies;
+    /** A map that stores movie titles as keys and Movie objects as values. */
     public Map<String,Movie> movies;
+    /** A list used to store movies temporarily from the database. */
     private List<Movie> moviesdb;         //Change to List to use add()
 
+    /**
+     * Constructor for the MovieCollection class.
+     * Initializes the movie collection and establishes a connection to the database.
+     * If the connection is successful, the movie collection is refreshed.
+     * <p>
+     * Role in the system: This constructor is responsible for initializing the
+     * movie collection and establishing the connection to the database to
+     * retrieve and manage movie data.
+     * </p>
+     * -{@link #db_Handler} - connect to database MovieCollection inside constructor
+     */
     public MovieCollection(){
         movies = new HashMap<>();
+        /** The database handler used to interact with the SQLite database. */
         db_Handler = new DatabaseHandler();
         // connect to database MovieCollection constructor
         if (db_Handler.connect()) {
@@ -40,32 +67,54 @@ public class MovieCollection {
         }
     }
 
+    /**
+     * -{@link #db_Handler} - connect to database MovieCollection out of constructor
+     */
     //initialize the class for Database
     DatabaseHandler db_Handler = new DatabaseHandler();
 //======================================================================================================================
     //used for unit testing
+    /**
+     * Used for unit testing, retrieves a movie by its title from the collection.
+     *
+     * @param title the title of the movie to retrieve
+     * @return the Movie object associated with the title, or null if not found
+     */
     public Movie getMovie(String title) {
         return movies.get(title);
     }
 
 //======================================================================================================================
 //addMovie(movie: Movie): boolean
+    /**
+     * Adds a new movie to the collection and the database.
+     *
+     * @param movie the Movie object to add
+     * @return true if the movie was successfully added, false if the movie already exists
+     */
     public  boolean addMovie(Movie movie){
-       /* if (movies.containsKey(movie.getTitle())) {
-            System.out.println("Error: Movie already exists in the collection.");
-            return false; // Movie already exists
-        }
-        movies.put(movie.getTitle(), movie);
-        db_Handler.addMovie();
-*/
 
+        // Check if the movie already exists in the collection
         if (movies.containsKey(movie.getTitle())) {
             System.out.println("Error: Movie already exists in the collection.");
             return false; // Movie already exists
         }
         movies.put(movie.getTitle(), movie);
 
-        // Add movie to the SQLite database
+        // Add the movie to the SQLite database using the DatabaseHandler
+        /**
+         * Adds a movie to the database using the db_Handler.
+         *
+         * @param movie The movie object containing details to be added to the database.
+         *
+         * Fields passed:
+         * @param movie.getTitle()         The title of the movie.
+         * @param movie.getRelease_Year()  The release year of the movie.
+         * @param movie.getGenre()         The genre of the movie.
+         * @param movie.getDirector()      The director of the movie.
+         * @param movie.getRating()        The rating of the movie.
+         * @param movie.getWatched_Status() The watched status of the movie.
+         */
         db_Handler.addMovie(
                 movie.getTitle(),
                 movie.getRelease_Year(),
@@ -74,7 +123,7 @@ public class MovieCollection {
                 movie.getRating(),
                 movie.getWatched_Status()
         );
-        // Add the movie to the in-memory list
+        //Add the movie to the in-memory list
         //movies.add(movie);
         System.out.println("Movie successfully added to the collection and database.");
         return true;
@@ -82,6 +131,12 @@ public class MovieCollection {
 //======================================================================================================================
 //removeMovie(title: String) boolean
     //leave message for movie that was removed
+    /**
+     * Removes a movie from the collection and the database.
+     *
+     * @param title the title of the movie to remove
+     * @return true if the movie was successfully removed, false otherwise
+     */
     public boolean removeMovie(String title) {
         /*
         if (movies.remove(title) == null) {
@@ -96,60 +151,81 @@ public class MovieCollection {
     }
 //======================================================================================================================
 //updateMovie(movie :Movie) boolean
-    //works
+    /**
+     * Updates a movie's attribute in the collection and database.
+     *
+     * @param title the title of the movie to update
+     * @param field the field of the movie to update (e.g., title, release_year, genre)
+     * @param newValue the new value for the specified field
+     * @return true if the movie was successfully updated, false otherwise
+     */
     public boolean updateMovie(String title, String field, String newValue) {
+        // Get the movie object from the in-memory collection using the title
         Movie movie = movies.get(title);  // Get from in-memory collection
 
+        // If the movie is not found in the collection, return false
         if (movie == null) {
             System.out.println("Error: Movie not found.");
             return false;
         }
 
-        // ✅ Update the in-memory movie object
+        // Update the movie object based on the field specified
         switch (field.toLowerCase()) {
             case "title":
+                // Check if the new title already exists in the collection
                 if (movies.containsKey(newValue)) {
                     System.out.println("Error: A movie with this title already exists.");
-                    return false;
+                    return false;  // Return false if the movie with the new title already exists
                 }
+                // Set the new title
                 movie.setTitle(newValue);
+                // Remove the old movie entry
                 movies.remove(title);
+                // Add the movie with the new title
                 movies.put(newValue, movie);
                 break;
 
             case "release_year":
                 try {
+                    // Try to parse the new release year
                     int newYear = Integer.parseInt(newValue);
                     if (newYear < 1900 || newYear > 2025) {
                         System.out.println("Error: Release year must be between 1900 and 2025.");
+                        // Return false if the year is out of valid range
                         return false;
                     }
+                    // Set the new release year
                     movie.setRelease_Year(newYear);
                 } catch (NumberFormatException e) {
                     System.out.println("Error: Invalid year format.");
-                    return false;
+                    return false; // Return false if the year format is invalid
                 }
                 break;
 
+            // Set the new genre
             case "genre":
                 movie.setGenre(newValue);
                 break;
 
+            // Set the new director's name
             case "director":
                 movie.setDirector(newValue);
                 break;
 
             case "rating":
                 try {
+                    // Try to parse the new rating
                     float newRating = Float.parseFloat(newValue);
                     if (newRating < 0 || newRating > 100) {
                         System.out.println("Error: Rating must be between 0 and 100.");
+                        // Return false if the rating is out of valid range
                         return false;
                     }
+                    // Set the new rating
                     movie.setRating(newRating);
                 } catch (NumberFormatException e) {
                     System.out.println("Error: Invalid rating format.");
-                    return false;
+                    return false; // Return false if the rating format is invalid
                 }
                 break;
 
@@ -162,9 +238,10 @@ public class MovieCollection {
 
         }
 
-        //Update the database
+        //Update the movie attribute in the database using the DatabaseHandler
         boolean updated = db_Handler.updateMovieAttribute(title, field, newValue);
 
+        // If the update was successful, refresh the in-memory collection and return true
         if (updated) {
             refreshMovies();  //Refresh in-memory collection
             System.out.println("Movie updated successfully.");
@@ -172,17 +249,34 @@ public class MovieCollection {
             System.out.println("Failed to update movie.");
         }
 
+        // Return whether the update was successful
         return updated;
     }
 //----------------------------------------------------------------------------------------------------------------------
-// 🔥 Refresh the in-memory movie list from the database
+//Refresh the in-memory movie list from the database
+    /**
+     * Refreshes the in-memory movie collection by fetching the latest data from the database.
+     * <p>
+     * This method clears the current in-memory collection of movies (stored in a HashMap), then retrieves
+     * all movie records from the database and re-populates the collection with the most up-to-date data.
+     * This ensures that the in-memory list reflects the latest changes made in the database.
+     * </p>
+     */
     public void refreshMovies() {
-        movies.clear();         // Clear the Map
+        // Clear the current in-memory movie collection (HashMap) before refreshing
+        movies.clear();
 
+        // SQL query to select all movies from the database
         String sql = "SELECT * FROM Movies;";
+
+        // Use a try-with-resources statement to ensure resources are closed properly
         try (Statement stmt = db_Handler.getConnection().createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
+
+            // Loop through the result set returned from the database
             while (rs.next()) {
+
+                // Create a new Movie object from the data in the result set
                 Movie movie = new Movie(
                         rs.getString("title"),
                         rs.getInt("Release_Year"),
@@ -192,36 +286,71 @@ public class MovieCollection {
                         rs.getBoolean("watched_status")
                 );
 
+                // Add the movie object to the in-memory collection (Map) using the title as the key
                 movies.put(movie.getTitle(), movie);  //Add to the Map
             }
-            System.out.println("In-memory collection refreshed.");
+            System.out.println("In-memory collection refreshed.");  // Log a message indicating the in-memory collection was successfully refreshed
         } catch (SQLException e) {
+            // If an error occurs while fetching data from the database, display an error message
             System.out.println("Failed to refresh in-memory collection: " + e.getMessage());
         }
     }
 
+//======================================================================================================================
+    /**
+     * Closes the database connection.
+     * <p>
+     *This method ensures that any resources associated with the database connection are properly released
+     * when the connection is no longer needed, helping prevent memory leaks or connection issues.
+     * </p>
+     */
     public void close() {
         db_Handler.close();
     }
 //======================================================================================================================
 //getMovie():List<Movie>
+    /**
+     * Displays the entire movie collection, either from the in-memory collection or the database.
+     * <p>
+     * If the in-memory collection is empty, a message is displayed indicating that no movies are available.
+     * If movies exist, each movie is printed using the Movie object's toString() method.
+     * Additionally, the method calls {@link DatabaseHandler#displayAllMovies()} to display the full movie collection from the database.
+     * </p>
+     */
     public void Display_MovieCollection(){
+        // Check if the movie collection is empty
         if (movies.isEmpty()) {
             System.out.println("No movies in the collection.");
         } else {
+            // Loop through the in-memory movie collection and print each movie
             for (Movie movie : movies.values()) {
                 System.out.println(movie);
             }
         }
+        // Call the database handler to display all movies from the database
         db_Handler.displayAllMovies();
     }
 //======================================================================================================================
+    //Custom feature that will Calculate the average movie rating within the moviecollection list
+    /**
+     * Calculates the average rating of all movies in the collection.
+     * <p>
+     * This method iterates through the entire movie collection, sums up the ratings of all movies, and calculates the average.
+     * If the collection is empty, a message is displayed indicating that no ratings are available to calculate.
+     * The average rating is then formatted to one decimal place for readability.
+     * </p>
+     *
+     * @return the average rating of the movies in the collection, formatted to 1 decimal place.
+     *         Returns 0 if the collection is empty.
+     */
     public float calculateAverageRating() {
+        // Check if there are no movies in the collection
         if (movies.isEmpty()) {
             System.out.println("No movies to calculate an average rating.");
             return 0;
         }
         float sum = 0;
+        // Loop through all movies in the collection to sum their ratings
         for (Movie movie : movies.values()) {
             sum += movie.getRating();
         }
@@ -233,17 +362,45 @@ public class MovieCollection {
 
         // Output the formatted average
         System.out.println("Average Movie Rating: " + formattedAverage);
+        // Return the formatted average as a float
         return Float.parseFloat(formattedAverage);
     }
 //======================================================================================================================
 //upload data through textfile
+    /**
+     * Adds movies to the collection by reading movie data from a CSV file.
+     * The file should contain movie data with the following columns:
+     * Title, Year, Genre, Director, Rating, and Watched status.
+     * Each line in the file represents a single movie entry.
+     *<p>
+     * The method performs validation on each field before adding the movie to the collection:
+     * <p>
+     * - Title length should be between 1 and 45 characters.
+     * <p>
+     * - Year should be an integer between 1900 and 2025.
+     * <p>
+     * - Genre should match one of the predefined valid genres.
+     * <p>
+     * - Director name should be between 2 and 25 characters and consist only of letters and spaces.
+     * <p>
+     * - Rating should be a float between 0 and 100.
+     * <p>
+     * - Watched status should be either 'true' or 'false'.
+     *</p>
+     * If any validation fails, the movie is skipped and an error message is printed.
+     * If the movie is valid, it is added to the movie collection.
+     *
+     * @param filePath the path to the CSV file containing movie data
+     */
     public void addMoviesFromFile(String filePath) {
 
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
+            // Read each line from the file
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(","); // Assuming CSV format: Title,Year,Genre,Director,Rating,Watched
 
+                // Check if the line contains the correct number of fields
                 if (parts.length != 6) {
                     System.out.println("Skipping invalid line (wrong number of fields): " + line);
                     continue;
@@ -323,18 +480,43 @@ public class MovieCollection {
                 System.out.println("Added movie: " + title);
             }
         } catch (IOException e) {
+            // Handle file reading errors
             System.out.println("Error reading file: " + e.getMessage());
         }
     }
 //======================================================================================================================
 //Menu
 //This method displays a menu that allows the user to interact with the system.
+    /**
+     * This method includes validation checks for all user inputs and ensures data integrity by validating
+     * the fields (such as ensuring the title is within 45 characters, the rating is between 0 and 100, etc.).
+     *<p>
+     * The menu supports:
+     * <p>
+     * - **Database**: Connect to a database for adding a movie.
+     * <p>
+     * - **Manual Entry**: Prompt the user to manually input movie details, including title, year, genre,
+     *        director, rating, and watched status.
+     * <p>
+     * - **Update Movie Collection**: Allows the user to update various fields of a movie, checking that the
+     *   entered data is valid (e.g., valid genres, valid release year).
+     * <p>
+     * - **Display All Movies in Collection**: Displays all the movies in the collection.
+     * <p>
+     * - **Calculate Average Movie Rating**: Calculates and displays the average rating of all movies.
+     * <p>
+     * - **Exit Menu**: Exits the menu and terminates the program.
+     *
+     * The menu continues to run in a loop until the user chooses to exit.
+     *</p>
+     */
     public void Movie_Menu () {
         //Menu test: letters failed, numbers passed, special failed)
         Scanner sc = new Scanner(System.in);
         int Option;
 
         do {
+            // Display menu options
             System.out.println("\nMovie Collection Menu:");
             System.out.println("1. Add Movie");
             System.out.println("2. Remove Movie");
@@ -344,6 +526,7 @@ public class MovieCollection {
             System.out.println("6. Exit Menu");
             System.out.print("Enter your option by the number associated: ");
 
+            // Validate user input
             while (true) {
                 // Check if the input is an integer
                 if (!sc.hasNextInt()) {
@@ -392,6 +575,9 @@ public class MovieCollection {
                             }
                         }
                     }
+
+                    // Switch case for handling different menu options based on user selection
+                    // The user selects an option by entering the corresponding number as shown in the menu.
                     switch (option2) {
 //**********************************************************************************************************************
                         //--textfile option
@@ -426,6 +612,7 @@ public class MovieCollection {
                             sc.nextLine();
                             String title = sc.nextLine();
 
+                            // Ensure title is not empty or too long
                             while (title.length() < 1) {
                                 System.out.println("Error: Title entered had no characters entered, please re-enter proper amount.");
                                 System.out.print("Enter Movie Title: ");
@@ -556,7 +743,7 @@ public class MovieCollection {
                     db_Handler.removeMovie(remove_title);
 
 
-
+// After removal, the movie will be deleted from the database (further handling could be added here)
                     break;
 //----------------------------------------------------------------------------------------------------------------------
                 //Update Movie Collection
@@ -572,7 +759,7 @@ public class MovieCollection {
                         System.out.println("Error: Movie not found.");
                         break;  }
                     */
-
+                    // Check if the movie exists in the database using db_Handler
                     if (!db_Handler.movieExists(updateTitle)) {  // <-- Check in the database
                         System.out.println("Error: Movie not found in the database.");
                         break;
@@ -598,8 +785,8 @@ public class MovieCollection {
                                 } else if (newValue.length() > 45) {
                                     System.out.println("Error: Title exceeds 45 characters. Please enter a shorter title.");
                                 } else {
-                                    validUpdate = true;
-                                    break;
+                                    validUpdate = true; // Mark the update as valid
+                                    break; // Exit the loop once a valid title is entered
                                 }
                             }
                             break;
@@ -614,7 +801,7 @@ public class MovieCollection {
                                         System.out.println("Error: The year you entered was invalid. Please re-enter a year between 1900 and 2025.");
                                     } else {
                                         newValue = Integer.toString(year);
-                                        validUpdate = true;
+                                        validUpdate = true; // Mark the update as valid
                                         break;
                                     }
                                 } catch (NumberFormatException e) {
@@ -625,7 +812,7 @@ public class MovieCollection {
 //**********************************************************************************************************************
                         //use different variables for this case
                         case "genre":
-                            // Only specific genre words are allowed
+                            // Ensure the genre is one of the valid genres
                             String[] validGenress = {"Action", "Crime", "Drama", "Fantasy", "Horror", "Comedy", "Romance", "Science Fiction", "Sports", "Thriller", "Mystery", "War", "Western"};
                             while (true) {
                                 System.out.print("Enter new genre: ");
@@ -640,7 +827,7 @@ public class MovieCollection {
                                 if (!validGenree) {
                                     System.out.println("Error: Invalid genre. Please enter a valid genre from the list: Action, Crime, Drama, Fantasy, Horror, Comedy, Romance, Science Fiction, Sports, Thriller, Mystery, War, Western.");
                                 } else {
-                                    validUpdate = true;
+                                    validUpdate = true; // Mark the update as valid
                                     break;
                                 }
                             }
@@ -744,6 +931,5 @@ public class MovieCollection {
         } while (Option != 6);
     }//menu method
 }//class
-
 
 //C:\sqlite\MovieCollectionDatabase.db

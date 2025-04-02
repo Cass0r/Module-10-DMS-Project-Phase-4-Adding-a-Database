@@ -8,23 +8,91 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.sql.*;
 
+/**
+ * The {@code MovieFrame} class represents the main graphical user interface (GUI) window of the movie collection application.
+ * <p>
+ * This class extends {@link javax.swing.JFrame} to create a window that allows users to interact with the movie collection.
+ * It provides buttons and fields for performing various actions such as adding, displaying, removing, and updating movies,
+ * as well as calculating the average movie rating. The layout is managed by a {@link javax.swing.JPanel} and components such as
+ * {@link javax.swing.JButton} and {@link javax.swing.JTextField} are used for user input and interactions.
+ * </p>
+ *
+ * <p>
+ * The main components of the GUI are:
+ * <ul>
+ *     <li>{@link #tfUserMenuSelect} - Text field for user menu selection input.</li>
+ *     <li>{@link #btnExit} - Button to exit the application.</li>
+ *     <li>{@link #MainPanel} - The main panel for the GUI layout.</li>
+ *     <li>{@link #MenuTitle} - Label displaying the title of the menu.</li>
+ *     <li>{@link #addMovieButton} - Button to add a movie to the collection.</li>
+ *     <li>{@link #displayMovieCollectionButton} - Button to display all movies in the collection.</li>
+ *     <li>{@link #calculateAverageMovieRatingButton} - Button to calculate the average movie rating.</li>
+ *     <li>{@link #removeMovieButton} - Button to remove a movie from the collection.</li>
+ *     <li>{@link #exitMenuButton} - Button to exit the menu or application.</li>
+ *     <li>{@link #updateMovieButton} - Button to update an existing movie in the collection.</li>
+ * </ul>
+ *
+ *
+ * <p>
+ * This class also handles user input events, associating each button with an action handler to perform the corresponding
+ * functionality. The window is displayed with a custom layout, and UI themes are applied to ensure consistency in design.
+ * </p>
+ *
+ * @see javax.swing.JFrame
+ * @see javax.swing.JPanel
+ * @see javax.swing.JButton
+ * @see javax.swing.JTextField
+ */
 public class MovieFrame extends JFrame {
     //All parts of the java form on the GUI
+    /**Is a text field that allows the user to input a selection from the menu. */
     private JTextField tfUserMenuSelect;
+    /**Is a button that triggers the exit action for the application.*/
     private JButton btnExit;
+    /**Is the main container panel that holds all the components of the user interface. */
     private JPanel MainPanel;
+    /**A label that displays the title of the menu in the user interface. */
     private JLabel MenuTitle;
+    /**Button that allows the user to add a new movie to the collection. */
     private JButton addMovieButton;
+    /**Button that triggers the action to display the movie collection. */
     private JButton displayMovieCollectionButton;
+    /**Button that calculates the average rating of all movies in the collection. */
     private JButton calculateAverageMovieRatingButton;
+    /**Button that allows the user to remove a movie from the collection. */
     private JButton removeMovieButton;
+    /**Button that triggers the exit action for the menu. */
     private JButton exitMenuButton;
+    /**Button that allows the user to update the details of an existing movie in the collection. */
     private JButton updateMovieButton;
 
     //Calls back to the MovieCollection class as reference
+    /**It is used to manage and perform operations on the collection of movies, including adding, removing, and displaying movies. */
     private MovieCollection movieCollection;
     //----------------------------------------------------------------------------------------------------------------------
 //Constructor
+    /**
+     * Constructs a new {@code MovieFrame} and initializes the graphical user interface (GUI) for the movie collection application.
+     * <p>
+     * The constructor sets up the main panel, window properties (size, location, close operation), and applies the default pop-up theme
+     * for consistent visual styling. It also initializes the movie collection and attaches action listeners to the UI buttons to perform
+     * various actions such as adding, removing, updating, displaying movies, and calculating the average rating.
+     * </p>
+     * <p>
+     * The action listeners associated with each button invoke the respective methods to manage the movie collection:
+     * <ul>
+     *     <li>{@link #addMovie()} - Adds a new movie to the collection.</li>
+     *     <li>{@link #removeMovie()} - Removes a movie from the collection.</li>
+     *     <li>{@link #displayMovies()} - Displays the movie collection.</li>
+     *     <li>{@link #updateMovie()} - Updates an existing movie in the collection.</li>
+     *     <li>{@link #calculateAverageRating()} - Calculates and displays the average rating of all movies.</li>
+     * </ul>
+     *
+     * <p>
+     * The constructor also provides a confirmation dialog when the exit button is clicked, asking the user to confirm their intent
+     * to exit the application. If confirmed, the application is terminated.
+     * </p>
+     */
     public MovieFrame() {
         //The settings for the GUI when the program runs
         setContentPane(MainPanel);
@@ -92,8 +160,11 @@ public class MovieFrame extends JFrame {
             }
         });
     }
-    //----------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 //adding movies choice
+    /**
+     * Displays a dialog to select how to add a movie (manually or from a database).
+     */
     private void addMovie() {
         String[] options = {"Manually", "Database"};
         int choice = JOptionPane.showOptionDialog(
@@ -113,9 +184,13 @@ public class MovieFrame extends JFrame {
             addMoviesFromDB(); // Calls file input method
         }
     }
-    //----------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 //Adding movies manually, alot of what's done in this method will be repeated throughout the other methods for error
 //handling as well as window setup
+    /**
+     * Handles adding a movie manually by prompting the user for various movie details.
+     * This method validates inputs for title, year, genre, director, rating, and watched status.
+     */
     private void addMovieManually() {
 //**********************************************************************************************************************
         String title;
@@ -213,6 +288,10 @@ public class MovieFrame extends JFrame {
     }
     //----------------------------------------------------------------------------------------------------------------------
 //Movies will be added through file (This class will share similar constraints as the last method
+    /**
+     * Adds movies from a file selected by the user.
+     * The movie data is read from a text file, and each movie is validated before being added to the collection.
+     */
     private void addMoviesFromDB() {
         //  Ask for the database connection first
         if (!DatabaseHandler.getInstance().connect()) {
@@ -335,6 +414,10 @@ public class MovieFrame extends JFrame {
     }
 //----------------------------------------------------------------------------------------------------------------------
 // Method to Remove Movie
+    /**
+     * Removes a movie from the collection by title.
+     * Prompts the user for the movie title and removes it if found.
+     */
     private void removeMovie() {
         String title = JOptionPane.showInputDialog(this, "Enter Movie Title to Remove:");
         if (title == null || title.trim().isEmpty()) return;
@@ -347,6 +430,10 @@ public class MovieFrame extends JFrame {
     }
     //----------------------------------------------------------------------------------------------------------------------
 //Display Method
+    /**
+     * Displays all movies in the collection in a scrollable dialog.
+     * If no movies are found, an error message is shown.
+     */
     private void displayMovies() {
         if (movieCollection.movies.isEmpty()) {
             UITheme.applyErrorTheme(this, "No movies in the collection.","Error");
@@ -374,6 +461,10 @@ public class MovieFrame extends JFrame {
     }
     //----------------------------------------------------------------------------------------------------------------------
 // Method to Update Movie
+    /**
+     * Prompts the user to select a movie field and update its value.
+     * Allows updating fields such as title, year, genre, director, rating, and watched status.
+     */
     private void updateMovie() {
         String title = JOptionPane.showInputDialog(this, "Enter Movie Title to Update:");
         if (title == null || title.trim().isEmpty()) return; // User canceled or empty input
@@ -404,6 +495,8 @@ public class MovieFrame extends JFrame {
                 UITheme.applyErrorTheme(this, "Invalid input! Please enter a valid value.","Error");
                 continue;
             }
+            // Validate new value based on field
+            // (similar validation as for addMovieManually)
 //**********************************************************************************************************************
             switch (field.toLowerCase().replace(" ", "")) {
 
@@ -495,17 +588,26 @@ public class MovieFrame extends JFrame {
             UITheme.applyErrorTheme(this, "Failed to update movie.","Error");
         }
     }
-    //----------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
     // Method to Calculate Average Rating
+    /**
+     * Calculates the average rating of all movies in the collection and displays it in a dialog.
+     */
     private void calculateAverageRating() {
         float avg = movieCollection.calculateAverageRating();
         JOptionPane.showMessageDialog(this, "Average Movie Rating: " + avg);
     }
-    //----------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
     // Main Method to begin the program and Run GUI
+    /**
+     * Main method to launch the MovieFrame application.
+     * <p>
+     * Initializes the movie collection GUI when the program is executed.
+     * </p>
+     *
+     * @param args Command-line arguments (not used in this case).
+     */
     public static void main(String[] args) {
         new MovieFrame();
     }
-
-
 }

@@ -4,27 +4,83 @@ import org.junit.jupiter.api.Test;
 import java.io.*;
 
 import static org.junit.jupiter.api.Assertions.*;
-
+/**
+ * Unit tests for the {@link MovieCollection} class.
+ * <p>
+ * This class tests the functionality of the {@link MovieCollection} class, ensuring that it can correctly:
+ * <p>
+ * - Add, remove, and update movies
+ * <p>
+ * - Handle invalid data gracefully
+ * <p>
+ * - Calculate average ratings
+ * <p>
+ * - Read movies from a file.
+ * </p>
+ * <p>
+ * The tests cover a variety of use cases, including valid inputs, invalid inputs, boundary cases, and file operations.
+ * </p>
+ * - {@link #movieCollection} - that is used in the test cases to simulate operations on the movie collection. The tests ensure that the collection behaves correctly under different scenarios
+ *
+ *<p>
+ * Note: This class does not require a constructor, as the main method serves as the entry point.
+ */
 public class MovieCollectionTest {
-
+    /**It simulates operations on the movie collection, ensuring that the collection behaves correctly under different scenarios through various test cases, class used in the test cases.*/
     private MovieCollection movieCollection;
 
+    /**
+     * Initializes a new instance of {@link MovieCollection} before each test.
+     * <p>
+     * This method is annotated with {@link BeforeEach}, which means it is run before each test method.
+     * It ensures that each test has a fresh instance of {@link MovieCollection} to work with, preventing state
+     * contamination across tests.
+     * </p>
+     */
     @BeforeEach
     void setUp() {
         movieCollection = new MovieCollection();
     }
 
-    //----------------------------------------------------------------------------------------------------------------------
+//======================================================================================================================
     //add movie test
     //The user is able to manually enter a new record, which is printed to the screen. Every user input has appropriate
     //error handling, the user can never crash the program or enter “bad” data
+    /**
+     * Tests that a movie can be successfully added to the collection.
+     * <p>
+     * This test verifies that a movie can be added with valid data and that the result is successful.
+     * </p>
+     */
     @Test
     void testAddMovie() {
         Movie movie = new Movie("Inception", 2010, "Science Fiction", "Christopher Nolan", 95.7f, true);
         assertTrue(movieCollection.addMovie(movie), "Movie should be added successfully.");
     }
-
+//----------------------------------------------------------------------------------------------------------------------
     //test to see if duplicate can exist
+    /**
+     * Tests that adding a duplicate movie fails.
+     * <p>
+     * This test ensures that duplicate movies are not added to the collection.
+     * </p>
+     * This Test will test if proper error handling with invalid inputs:
+     * <p>
+     *            - Missing title as well as testing Word Limit
+     *             <p>
+     *             - Invalid release year (years out of range or non-numeric values)
+     *            <p>
+     *             - Invalid genre (non-alphabetical values, special characters)
+     *             <p>
+     *             - Invalid director name (numbers, excessive length, special characters)
+     *             <p>
+     *             - Invalid rating (out of range values, non-numeric values)
+     *             <p>
+     *             - Invalid watched status (non-boolean values)
+     *             </p>
+     *
+     *
+     */
     @Test
     void testAddMovie_InvalidField() {
         Movie movie = new Movie("Inception", 2010, "Science Fiction", "Christopher Nolan", 95.0f, true);
@@ -32,9 +88,15 @@ public class MovieCollectionTest {
 
         assertFalse(movieCollection.addMovie(movie), "Adding duplicate movie should fail.");
     }
-//----------------------------------------------------------------------------------------------------------------------
+//======================================================================================================================
     //Remove Objects Test
     //In your video demonstration, a unit test correctly verifies that an object can be removed from the system.
+    /**
+     * Tests that a movie can be successfully removed from the collection.
+     * <p>
+     * This test verifies that a movie can be removed by its title.
+     * </p>
+     */
     @Test
     void testRemoveMovie() {
         Movie movie = new Movie("Inception", 2010, "Science Fiction", "Christopher Nolan", 95.0f, true);
@@ -42,16 +104,28 @@ public class MovieCollectionTest {
         assertTrue(movieCollection.removeMovie("Inception"), "Movie should be removed successfully.");
     }
 
+//----------------------------------------------------------------------------------------------------------------------
     //test to see if the method will remove  a movie that doesn't exist.
+    /**
+     * Tests that attempting to remove a non-existent movie fails.
+     * <p>
+     * This test ensures that trying to remove a movie that doesn't exist in the collection doesn't cause errors and returns false.
+     * </p>
+     */
     @Test
     void testRemoveMovie_NotFound() {
         assertFalse(movieCollection.removeMovie("NonExistentMovie"), "Removing non-existent movie should fail.");
     }
-//----------------------------------------------------------------------------------------------------------------------
+//======================================================================================================================
     //Update Objects Test
     //The user can update any field of any object, which is printed to the screen. Every user input has appropriate
     //error handling, the user can never crash the program or enter “bad” data.
-
+    /**
+     * Tests updating a movie's fields with valid data.
+     * <p>
+     * This test verifies that all fields of a movie (title, year, genre, director, rating, and watch status) can be updated correctly.
+     * </p>
+     */
     @Test
     void testUpdateMovie() {
         Movie movie = new Movie("Inception", 2010, "Science Fiction", "Christopher Nolan", 95.0f, true);
@@ -77,6 +151,28 @@ public class MovieCollectionTest {
         assertEquals(false, movieCollection.getMovie("red").getWatched_Status(), "Watch status should now be 'false'.");
     }
 
+//----------------------------------------------------------------------------------------------------------------------
+    //Invalid update movie fields being tested for error handling
+    /**
+     * Tests updating a movie's fields with invalid data.
+     * <p>
+     * This test ensures that invalid fields or values (incorrect field names or out-of-range values) are rejected, and proper error handling.
+     *       <p>
+     *       - Missing title as well as testing Word Limit
+     *       <p>
+     *       - Invalid release year (years out of range or non-numeric values)
+     *      <p>
+     *       - Invalid genre (non-alphabetical values, special characters)
+     *       <p>
+     *       - Invalid director name (numbers, excessive length, special characters)
+     *       <p>
+     *       - Invalid rating (out of range values, non-numeric values)
+     *       <p>
+     *       - Invalid watched status (non-boolean values)
+     *       </p>
+     *
+     *
+     */
     @Test
     void testUpdateMovie_InvalidField() {
         Movie movie = new Movie("Inception", 2010, "Science Fiction", "Christopher Nolan", 95.0f, true);
@@ -117,6 +213,13 @@ public class MovieCollectionTest {
     //Custom Action Test - Calculate Average Rating (your custom method)
     //The proposed custom feature works, making a calculation. Every user input has appropriate error handling, the
     //user can never crash the program or enter “bad” data.
+    /**
+     * Tests the calculation of the average rating for all movies in the collection.
+     * <p>
+     * This test verifies that the {@link MovieCollection#calculateAverageRating()} method correctly calculates the average rating
+     * for the movies in the collection.
+     * </p>
+     */
     @Test
     void testCalculateAverageRating() {
         movieCollection.addMovie(new Movie("Inception", 2010, "Science Fiction", "Christopher Nolan", 95.0f, true));
@@ -126,9 +229,17 @@ public class MovieCollectionTest {
         assertEquals(92.5f, averageRating, 0.1, "Average rating should be correctly calculated.");
     }
 
-//----------------------------------------------------------------------------------------------------------------------
+//======================================================================================================================
     //Opening a File Test (Reading from File)
     //In your video demonstration, a unit test correctly verifies that a file can be opened.
+    /**
+     * Tests loading movies from a file.
+     * <p>
+     * This test verifies that movies can be correctly loaded from a file and that the collection is updated accordingly.
+     * </p>
+     *
+     * @throws IOException if an I/O error occurs during file operations.
+     */
     @Test
     void testAddMoviesFromFile() throws IOException {
         // Create a temporary file to simulate the movie file
@@ -146,7 +257,14 @@ public class MovieCollectionTest {
         assertNotNull(movieCollection.getMovie("The Dark Knight"), "The Dark Knight should be loaded from file.");
     }
 
+//----------------------------------------------------------------------------------------------------------------------
     //test out the path finding
+    /**
+     * Tests loading movies from a file with an invalid file path.
+     * <p>
+     * This test ensures that the system handles invalid file paths gracefully.
+     * </p>
+     */
     @Test
     void testAddMoviesFromFile_Invalidpath() {
         //Test out code error handling for wrong path
@@ -155,7 +273,32 @@ public class MovieCollectionTest {
         // You could redirect output to capture this if needed (optional extra).
     }
 
+//----------------------------------------------------------------------------------------------------------------------
     //Testing out invalid inputs within the textfile
+    /**
+     * Tests the handling of invalid movie data when loading movies from a file.
+     * <p>
+     * This test ensures that the {@link MovieCollection#addMoviesFromFile(String)} method correctly handles and rejects invalid data
+     * in the movie file. The test simulates a file containing invalid movie entries, including:
+     * <p>
+     * - Missing title as well as testing Word Limit
+     * <p>
+     * - Invalid release year (years out of range or non-numeric values)
+     * <p>
+     * - Invalid genre (non-alphabetical values, special characters)
+     * <p>
+     * - Invalid director name (numbers, excessive length, special characters)
+     * <p>
+     * - Invalid rating (out of range values, non-numeric values)
+     * <p>
+     * - Invalid watched status (non-boolean values)
+     * </p>
+     * <p>
+     * The file is created temporarily, and the movie data is written in an invalid format to test how the method handles each case.
+     * </p>
+     *
+     * @throws IOException if an I/O error occurs during file operations.
+     */
     @Test
     void testAddMoviesFromFile_InvalidMovies() throws IOException {
         // Create a temporary file to simulate the movie file

@@ -9,18 +9,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c89d64c6-185d-46e0-bdf3-4b9939905249" name="Changes" comment="All functions for the GUI has been tested and passed, files commented">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="c89d64c6-185d-46e0-bdf3-4b9939905249" name="Changes" comment="JavaDoc created and stored in docs folder within Intellij project.&#10;Comments add as well as Updated within the project.&#10;&#10;Final Version">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DBHelper/DBHelper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/DBHelper/DBHelper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DBHelper/Movies.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/DBHelper/Movies.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/MainApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/MainApplication.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Movie.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Movie.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/MovieCollection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/MovieCollection.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/MovieCollectionTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/MovieCollectionTest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/MovieFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/MovieFrame.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/UITheme.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/UITheme.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -219,7 +210,9 @@
       <workItem from="1743214893272" duration="5125000" />
       <workItem from="1743275470941" duration="46690000" />
       <workItem from="1743375363303" duration="4654000" />
-      <workItem from="1743534341713" duration="22950000" />
+      <workItem from="1743534341713" duration="23092000" />
+      <workItem from="1743989320717" duration="1044000" />
+      <workItem from="1744578191093" duration="375000" />
     </task>
     <task id="LOCAL-00001" summary="Control Code">
       <option name="closed" value="true" />
@@ -261,7 +254,15 @@
       <option name="project" value="LOCAL" />
       <updated>1743376947608</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="JavaDoc created and stored in docs folder within Intellij project.&#10;Comments add as well as Updated within the project.&#10;&#10;Final Version">
+      <option name="closed" value="true" />
+      <created>1743564672849</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1743564672849</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -272,19 +273,30 @@
     <MESSAGE value="SQLite jarfile and DBHelper code generated" />
     <MESSAGE value="Database handler class created and integrated into the Movie Collection Class" />
     <MESSAGE value="All functions for the GUI has been tested and passed, files commented" />
-    <option name="LAST_COMMIT_MESSAGE" value="All functions for the GUI has been tested and passed, files commented" />
+    <MESSAGE value="JavaDoc created and stored in docs folder within Intellij project.&#10;Comments add as well as Updated within the project.&#10;&#10;Final Version" />
+    <option name="LAST_COMMIT_MESSAGE" value="JavaDoc created and stored in docs folder within Intellij project.&#10;Comments add as well as Updated within the project.&#10;&#10;Final Version" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-method">
-          <url>file://$PROJECT_DIR$/src/MovieCollection.java</url>
-          <line>264</line>
-          <properties class="MovieCollection" method="refreshMovies">
+          <url>file://$PROJECT_DIR$/src/MovieFrame.java</url>
+          <line>438</line>
+          <properties class="MovieFrame" method="displayMovies">
             <option name="EMULATED" value="true" />
             <option name="WATCH_EXIT" value="false" />
           </properties>
-          <option name="timeStamp" value="7" />
+          <option name="timeStamp" value="8" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/MovieFrame.java</url>
+          <line>10</line>
+          <option name="timeStamp" value="9" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/MovieFrame.java</url>
+          <line>109</line>
+          <option name="timeStamp" value="10" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

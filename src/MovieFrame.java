@@ -8,6 +8,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.sql.*;
 
+//C:\Users\carjo\Downloads\\MovieCollectionDatabase.db
+
 /**
  * The {@code MovieFrame} class represents the main graphical user interface (GUI) window of the movie collection application.
  * <p>
@@ -435,6 +437,8 @@ public class MovieFrame extends JFrame {
      * If no movies are found, an error message is shown.
      */
     private void displayMovies() {
+        movieCollection.refreshMovies();
+
         if (movieCollection.movies.isEmpty()) {
             UITheme.applyErrorTheme(this, "No movies in the collection.","Error");
             return;
